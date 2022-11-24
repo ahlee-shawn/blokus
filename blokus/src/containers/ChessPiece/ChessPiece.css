@@ -1,0 +1,7 @@
+.chess_piece {
+    margin: 0.1rem;
+}
+
+.chess_row {
+    display: flex;
+}

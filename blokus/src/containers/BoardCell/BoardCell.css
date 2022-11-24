@@ -1,0 +1,31 @@
+.board_cell_button {
+    padding: 0;
+    margin: 0;
+    width: 0.8rem;
+    height: 0.8rem;
+    border: 0.05rem solid black;
+}
+
+.player_one_cell {
+    background-color: blue;
+}
+
+.player_two_cell {
+    background-color: yellow;
+}
+
+.player_three_cell {
+    background-color: red;
+}
+
+.player_four_cell {
+    background-color: green;
+}
+
+.no_player_cell {
+    background-color: lightgray;
+}
+
+.no_player_cell:hover {
+    cursor: pointer;
+}

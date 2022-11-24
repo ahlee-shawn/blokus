@@ -1,25 +1,41 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+import controlContext from "./contexts/control-context";
+import ControlPanel from "./containers/GameSpace/GameSpace";
+import GameSpace from "./containers/ControlPanel/ControlPanel";
+
+import board from "./shared/board";
+
+import "./App.css";
+
+class App extends Component {
+  state = {
+    board: board,
+  }
+
+  // constructor() {
+  //   super();
+  // }
+
+  render() {
+    return (
+      <React.Fragment>
+        <controlContext.Provider
+          value={{
+            board,
+          }}
         >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+          <div className="gui_container">
+            <div className="game_container">
+              <ControlPanel />
+              <GameSpace />
+            </div>
+          </div>
+        </controlContext.Provider>
+      </React.Fragment>
+    )
+  }
+
 }
 
 export default App;

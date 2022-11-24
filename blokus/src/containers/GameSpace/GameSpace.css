@@ -1,0 +1,9 @@
+.game_space_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 65%;
+    border-right: 0.1rem solid black;
+    padding: 1rem;
+}
