@@ -32,7 +32,7 @@ class App extends Component {
     this.setState({ currPlayer: player.substr(player.length - 1) });
   }
 
-  canPreview = (mouseRow, mouseCol) => {
+  canPreviewChess = (mouseRow, mouseCol) => {
     const pattern = this.state.selectedChessPattern;
     const patternLength = 5;
     const offset = 2;
@@ -51,7 +51,7 @@ class App extends Component {
     return true;
   }
 
-  renderPreview = (mouseRow, mouseCol) => {
+  renderPreviewChess = (mouseRow, mouseCol) => {
     const pattern = this.state.selectedChessPattern;
     const patternLength = 5;
     const offset = 2;
@@ -71,8 +71,8 @@ class App extends Component {
     if (this.state.selectedChessId !== "") {
       const mouseRow = e.target.id.split("_")[3];
       const mouseCol = e.target.id.split("_")[5];
-      if (this.canPreview(mouseRow, mouseCol)) {
-        this.renderPreview(mouseRow, mouseCol);
+      if (this.canPreviewChess(mouseRow, mouseCol)) {
+        this.renderPreviewChess(mouseRow, mouseCol);
       }
     }
   }
@@ -81,6 +81,43 @@ class App extends Component {
     if (this.state.selectedChessId !== "") {
       let gameBoardClone = _.cloneDeep(this.state.gameBoard);
       this.setState({ viewBoard: gameBoardClone });
+    }
+  }
+
+  canPlaceChess = (mouseRow, mouseCol) => {
+    if (!this.canPreviewChess(mouseRow, mouseCol)) {
+      return false
+    }
+    // TODO: check if the chess can be placed here
+    return true
+  }
+
+  renderPlaceChess = (mouseRow, mouseCol) => {
+    const pattern = this.state.selectedChessPattern;
+    const patternLength = 5;
+    const offset = 2;
+    var gameBoardClone = _.cloneDeep(this.state.gameBoard);
+    const player = this.state.currPlayer;
+    for (var i = 0; i < patternLength; i++) {
+      for (var j = 0; j <= patternLength; j++) {
+        if (pattern[i][j] === "1") {
+          gameBoardClone[mouseRow - offset + i][mouseCol - offset + j] = player;
+        }
+      }
+    }
+    this.setState({ gameBoard: gameBoardClone });
+  }
+
+  placeChess = (e) => {
+    if (this.state.selectedChessId !== "") {
+      const mouseRow = e.target.id.split("_")[3];
+      const mouseCol = e.target.id.split("_")[5];
+      if (this.canPlaceChess(mouseRow, mouseCol)) {
+        this.renderPlaceChess(mouseRow, mouseCol);
+        this.setState({ selectedChessId: "" });
+        this.setState({ selectedChessPattern: [] });
+        this.setState({ currPlayer: "" });
+      }
     }
   }
 
@@ -103,6 +140,7 @@ class App extends Component {
             currPlayer,
             previewChess: this.previewChess,
             clearPreviewChess: this.clearPreviewChess,
+            placeChess: this.placeChess,
             gameBoard,
             viewBoard,
           }}

@@ -7,6 +7,7 @@ const controlContext = createContext({
     currPlayer: "",
     previewChess: () => {},
     clearPreviewChess: () => {},
+    placeChess: () => {},
     gameBoard: [],
     viewBoard: [],
 });
