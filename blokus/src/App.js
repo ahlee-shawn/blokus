@@ -17,11 +17,22 @@ class App extends Component {
   //   super();
   // }
 
+  selectChess = (e) => {
+    const div_id = e.nativeEvent.path[2].id;
+    this.setState({ selectedChessId: div_id});
+  }
+
   render() {
+    const {
+      selectedChessId
+    } = this.state;
+
     return (
       <React.Fragment>
         <controlContext.Provider
           value={{
+            selectChess: this.selectChess,
+            selectedChessId,
             board,
           }}
         >
