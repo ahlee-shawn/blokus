@@ -2,8 +2,6 @@ import { useContext } from "react";
 import controlContext from "../../contexts/control-context";
 import "./ScoreBoard.css"
 
-import BoardCell from "../BoardCell/BoardCell";
-
 const ScoreBoard = () => {
     const {
         gameBoard,
@@ -26,19 +24,19 @@ const ScoreBoard = () => {
         <div className="score_board">
             <div>Score: </div>
             <div>
-                <BoardCell player="1" row="score" col="player1"/>
+                <button type="button" className="board_cell_button player_one_cell" id="board_cell_row_score_player1"></button>
                 : {getScore("1")}
             </div>
             <div>
-                <BoardCell player="2" row="score" col="player2"/>
+                <button type="button" className="board_cell_button player_two_cell" id="board_cell_row_score_player2"></button>
                 : {getScore("2")}
             </div>
             <div>
-                <BoardCell player="3" row="score" col="player3"/>
+                <button type="button" className="board_cell_button player_three_cell" id="board_cell_row_score_player3"></button>
                 : {getScore("3")}
             </div>
             <div>
-                <BoardCell player="4" row="score" col="player4"/>
+                <button type="button" className="board_cell_button player_four_cell" id="board_cell_row_score_player4"></button>
                 : {getScore("4")}
             </div>
         </div>

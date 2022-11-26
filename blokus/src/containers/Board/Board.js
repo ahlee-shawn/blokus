@@ -14,7 +14,7 @@ const Board = () => {
     const rowLength = 20;
 
     return (
-        <div className="board" onMouseLeave={(e) => clearPreviewChess(e)}>
+        <div className="board" onMouseLeave={clearPreviewChess}>
             {_.times(rowLength).map((row) => {
                 return <div key={"board_row-"+row} className="board_row">{viewBoard[row].map((player, col) => {
                     return <BoardCell key={"row-"+row+"-col-"+col} player={player} row={row} col={col}/>

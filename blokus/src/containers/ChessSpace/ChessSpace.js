@@ -1,32 +1,39 @@
-import _ from "lodash";
+import { useContext } from "react";
+import controlContext from "../../contexts/control-context";
 import ChessPiece from "../ChessPiece/ChessPiece";
 
 import "./ChessSpace.css"
+
+import _ from "lodash";
 
 const ChessSpace = () => {
 
     const chess_piece_count = 21;
 
+    const {
+        playerChessList
+    } = useContext(controlContext);
+
     return (
         <div className="chess_space_container">
             <div className="chess_space_container">
                 {_.times(chess_piece_count).map((index) => {
-                    return <ChessPiece key={index} pattern={index} color="blue" player="player1"/>
+                    return playerChessList[0][index] ? <ChessPiece key={index} pattern={index} color="blue" player="player1"/> : <div key={index} className="empty_div"></div>
                 })}
             </div>
             <div className="chess_space_container">
                 {_.times(chess_piece_count).map((index) => {
-                    return <ChessPiece key={index} pattern={index} color="yellow" player="player2"/>
+                    return playerChessList[1][index] ? <ChessPiece key={index} pattern={index} color="yellow" player="player2"/> : <div key={index} className="empty_div"></div>
                 })}
             </div>
             <div className="chess_space_container">
                 {_.times(chess_piece_count).map((index) => {
-                    return <ChessPiece key={index} pattern={index} color="red" player="player3"/>
+                    return playerChessList[2][index] ? <ChessPiece key={index} pattern={index} color="red" player="player3"/> : <div key={index} className="empty_div"></div>
                 })}
             </div>
             <div className="chess_space_container">
                 {_.times(chess_piece_count).map((index) => {
-                    return <ChessPiece key={index} pattern={index} color="green" player="player4"/>
+                    return playerChessList[3][index] ? <ChessPiece key={index} pattern={index} color="green" player="player4"/> : <div key={index} className="empty_div"></div>
                 })}
             </div>
         </div>

@@ -14,8 +14,14 @@ import _ from "lodash";
 class App extends Component {
   state = {
     selectedChessId: "",
-    selectedChessPattern: [],
+    selectedChessPattern: [[]],
     currPlayer: "",
+    playerChessList: [
+      _.times(21, _.constant(true)),
+      _.times(21, _.constant(true)),
+      _.times(21, _.constant(true)),
+      _.times(21, _.constant(true)),
+    ],
     gameBoard: _.cloneDeep(board),
     viewBoard: _.cloneDeep(board),
   }
@@ -40,9 +46,11 @@ class App extends Component {
       for (var j = 0; j <= patternLength; j++) {
         if (pattern[i][j] === "1") {
           if (mouseRow - offset + i < 0 || mouseRow - offset + i > 19) {
+            this.clearPreviewChess();
             return false;
           }
           if (mouseCol - offset + j < 0 || mouseCol - offset + j > 19) {
+            this.clearPreviewChess();
             return false;
           }
         }
@@ -77,7 +85,7 @@ class App extends Component {
     }
   }
 
-  clearPreviewChess = (e) => {
+  clearPreviewChess = () => {
     if (this.state.selectedChessId !== "") {
       let gameBoardClone = _.cloneDeep(this.state.gameBoard);
       this.setState({ viewBoard: gameBoardClone });
@@ -114,6 +122,9 @@ class App extends Component {
       const mouseCol = e.target.id.split("_")[5];
       if (this.canPlaceChess(mouseRow, mouseCol)) {
         this.renderPlaceChess(mouseRow, mouseCol);
+        let playerChessListClone = this.state.playerChessList;
+        playerChessListClone[this.state.currPlayer - 1][this.state.selectedChessId.split("_")[3]] = false;
+        this.setState({ playerChessList: playerChessListClone });
         this.setState({ selectedChessId: "" });
         this.setState({ selectedChessPattern: [] });
         this.setState({ currPlayer: "" });
@@ -126,6 +137,7 @@ class App extends Component {
       selectedChessId,
       selectedChessPattern,
       currPlayer,
+      playerChessList,
       gameBoard,
       viewBoard,
     } = this.state;
@@ -141,6 +153,7 @@ class App extends Component {
             previewChess: this.previewChess,
             clearPreviewChess: this.clearPreviewChess,
             placeChess: this.placeChess,
+            playerChessList,
             gameBoard,
             viewBoard,
           }}

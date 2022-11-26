@@ -6,3 +6,8 @@
     width: 100%;
     flex-wrap: wrap;
 }
+
+.empty_div {
+    width: 0;
+    height: 0;
+}
