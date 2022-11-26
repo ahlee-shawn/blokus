@@ -1,10 +1,14 @@
 import { createContext } from "react";
-import board from "../shared/board";
 
 const controlContext = createContext({
     selectChess: () => {},
     selectedChessId: "",
-    board: board,
+    selectedChessPattern: [],
+    currPlayer: "",
+    previewChess: () => {},
+    clearPreviewChess: () => {},
+    gameBoard: [],
+    viewBoard: [],
 });
 
 export default controlContext;

@@ -6,7 +6,7 @@ import BoardCell from "../BoardCell/BoardCell";
 
 const ScoreBoard = () => {
     const {
-        board
+        gameBoard,
     } = useContext(controlContext);
 
     const getScore = (player) => {
@@ -14,7 +14,7 @@ const ScoreBoard = () => {
         var count = 0;
         for (var i = 0; i < rowLength; i++) {
             for (var j = 0; j < rowLength; j++) {
-                if (board[i][j] === player) {
+                if (gameBoard[i][j] === player) {
                     count++;
                 }
             }
