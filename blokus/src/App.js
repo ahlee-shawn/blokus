@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import controlContext from "./contexts/control-context";
 import GameSpace from "./containers/GameSpace/GameSpace";
-import ControlPanel from "./containers/ControlPanel/ControlPanel";
+import ChessPanel from "./containers/ChessPanel/ChessPanel";
 
 import board from "./shared/board";
 import chess from "./shared/chess";
@@ -22,20 +22,91 @@ class App extends Component {
       _.times(21, _.constant(true)),
       _.times(21, _.constant(true)),
     ],
+    playerChessPatternList: [
+      _.cloneDeep(chess),
+      _.cloneDeep(chess),
+      _.cloneDeep(chess),
+      _.cloneDeep(chess),
+    ],
     gameBoard: _.cloneDeep(board),
     viewBoard: _.cloneDeep(board),
   }
 
-  // constructor() {
-  //   super();
-  // }
+  constructor() {
+    super();
+    this.rotateOrFlipChess = this.rotateOrFlipChess.bind(this);
+  }
 
-  selectChess = (e) => {
-    const divId = e.nativeEvent.path[2].id;
+  componentDidMount = () => {
+    document.addEventListener("keydown", this.rotateOrFlipChess, false);
+  }
+
+  rotateOrFlipChess = (event) => {
+    if (this.state.selectedChessId !== "") {
+      let player = this.state.selectedChessId.substr(this.state.selectedChessId.length - 1) - 1;
+      let patternIndex = this.state.selectedChessId.split("_")[3];
+      var pattern = _.cloneDeep(this.state.selectedChessPattern);
+      if (event.keyCode === 32) { // space pressed
+        pattern = this.rotateChess(pattern);
+      } else if (event.keyCode === 37 || event.keyCode === 39) { // arrow left or right pressed
+        pattern = this.horizontalFlipChess(pattern);
+      } else if (event.keyCode === 38 || event.keyCode === 40) { // arrow up or down pressed
+        pattern = this.verticalFlipChess(pattern);
+      }
+      this.setState({ selectedChessPattern: pattern });
+      var playerChessPatternListClone = _.cloneDeep(this.state.playerChessPatternList);
+      playerChessPatternListClone[player][patternIndex] = pattern;
+      this.setState({ playerChessPatternList: playerChessPatternListClone });
+    }
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  rotateChess = (pattern) => { // rotate the pattern by 90 degrees clockwise
+    pattern = this.tranposeChess(pattern);
+    pattern = this.horizontalFlipChess(pattern);
+    return pattern;
+  }
+
+  tranposeChess = (pattern) => { // rotate the pattern by 90 degrees clockwise
+    for (var i = 0; i < 5; i++) {
+      for (var j = i + 1; j < 5; j++) {
+        const temp = pattern[i][j];
+        pattern[i][j] = pattern[j][i];
+        pattern[j][i] = temp;
+      }
+    }
+    return pattern;
+  }
+
+  horizontalFlipChess = (pattern) => {
+    for (var i = 0; i < 5; i++) {
+      for (var j = 0; j < 2; j++) {
+        const temp = pattern[i][j];
+        pattern[i][j] = pattern[i][4 - j];
+        pattern[i][4 - j] = temp;
+      }
+    }
+    return pattern;
+  }
+
+  verticalFlipChess = (pattern) => {
+    for (var i = 0; i < 2; i++) {
+      for (var j = 0; j < 5; j++) {
+        const temp = pattern[i][j];
+        pattern[i][j] = pattern[4 - i][j];
+        pattern[4 - i][j] = temp;
+      }
+    }
+    return pattern;
+  }
+
+  selectChess = (event) => {
+    const divId = event.nativeEvent.path[2].id;
     this.setState({ selectedChessId: divId });
-    this.setState({ selectedChessPattern: chess[divId.split("_")[3]] });
     let player = divId.split("_")[4];
     this.setState({ currPlayer: player.substr(player.length - 1) });
+    this.setState({ selectedChessPattern: this.state.playerChessPatternList[parseInt(player.substr(player.length - 1)) - 1][parseInt(divId.split("_")[3])] });
   }
 
   canPreviewChess = (mouseRow, mouseCol) => {
@@ -75,10 +146,10 @@ class App extends Component {
     this.setState({ viewBoard: gameBoardClone });
   }
 
-  previewChess = (e) => {
+  previewChess = (event) => {
     if (this.state.selectedChessId !== "") {
-      const mouseRow = e.target.id.split("_")[3];
-      const mouseCol = e.target.id.split("_")[5];
+      const mouseRow = event.target.id.split("_")[3];
+      const mouseCol = event.target.id.split("_")[5];
       if (this.canPreviewChess(mouseRow, mouseCol)) {
         this.renderPreviewChess(mouseRow, mouseCol);
       }
@@ -116,17 +187,17 @@ class App extends Component {
     this.setState({ gameBoard: gameBoardClone });
   }
 
-  placeChess = (e) => {
+  placeChess = (event) => {
     if (this.state.selectedChessId !== "") {
-      const mouseRow = e.target.id.split("_")[3];
-      const mouseCol = e.target.id.split("_")[5];
+      const mouseRow = event.target.id.split("_")[3];
+      const mouseCol = event.target.id.split("_")[5];
       if (this.canPlaceChess(mouseRow, mouseCol)) {
         this.renderPlaceChess(mouseRow, mouseCol);
         let playerChessListClone = this.state.playerChessList;
         playerChessListClone[this.state.currPlayer - 1][this.state.selectedChessId.split("_")[3]] = false;
         this.setState({ playerChessList: playerChessListClone });
         this.setState({ selectedChessId: "" });
-        this.setState({ selectedChessPattern: [] });
+        this.setState({ selectedChessPattern: [[]] });
         this.setState({ currPlayer: "" });
       }
     }
@@ -138,6 +209,7 @@ class App extends Component {
       selectedChessPattern,
       currPlayer,
       playerChessList,
+      playerChessPatternList,
       gameBoard,
       viewBoard,
     } = this.state;
@@ -154,6 +226,7 @@ class App extends Component {
             clearPreviewChess: this.clearPreviewChess,
             placeChess: this.placeChess,
             playerChessList,
+            playerChessPatternList,
             gameBoard,
             viewBoard,
           }}
@@ -161,7 +234,7 @@ class App extends Component {
           <div className="gui_container">
             <div className="game_container">
               <GameSpace />
-              <ControlPanel />
+              <ChessPanel />
             </div>
           </div>
         </controlContext.Provider>

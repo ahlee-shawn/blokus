@@ -1,0 +1,10 @@
+.control_panel_container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 60%;
+    min-height: 100%;
+    padding: 1rem;
+    border-left: 0.1rem solid black;
+}

@@ -1,10 +1,17 @@
-.control_panel_container {
+.control_panel {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 60%;
-    min-height: 100%;
-    padding: 1rem;
-    border-left: 0.1rem solid black;
+}
+
+.control_button {
+    margin: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border: 0.1rem solid gray;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.control_text {
+    font-size: larger;
 }
