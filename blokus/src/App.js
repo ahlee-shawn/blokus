@@ -7,9 +7,9 @@ import ChessPanel from "./containers/ChessPanel/ChessPanel";
 import board from "./shared/board";
 import chess from "./shared/chess";
 
-import "./App.css";
-
 import _ from "lodash";
+
+import "./App.css";
 
 class App extends Component {
   state = {
@@ -30,22 +30,29 @@ class App extends Component {
     ],
     gameBoard: _.cloneDeep(board),
     viewBoard: _.cloneDeep(board),
+    mouseLocation: {},
   }
 
   constructor() {
     super();
     this.rotateOrFlipChess = this.rotateOrFlipChess.bind(this);
+    this.mouseMoveOnBoard = this.mouseMoveOnBoard.bind(this);
   }
 
   componentDidMount = () => {
     document.addEventListener("keydown", this.rotateOrFlipChess, false);
+    document.addEventListener("mousemove", this.mouseMoveOnBoard, false);
+  }
+
+  mouseMoveOnBoard = (event) => {
+    this.setState({ mouseLocation: document.elementFromPoint(event.clientX, event.clientY) });
   }
 
   rotateOrFlipChess = (event) => {
-    if (this.state.selectedChessId !== "") {
-      let player = this.state.selectedChessId.substr(this.state.selectedChessId.length - 1) - 1;
+    if (this.state.selectedChessId !== "" && [32, 37, 38, 39, 40].includes(event.keyCode)) {
+      let player = this.state.currPlayer - 1;
       let patternIndex = this.state.selectedChessId.split("_")[3];
-      var pattern = _.cloneDeep(this.state.selectedChessPattern);
+      var pattern = this.state.selectedChessPattern;
       if (event.keyCode === 32) { // space pressed
         pattern = this.rotateChess(pattern);
       } else if (event.keyCode === 37 || event.keyCode === 39) { // arrow left or right pressed
@@ -57,6 +64,14 @@ class App extends Component {
       var playerChessPatternListClone = _.cloneDeep(this.state.playerChessPatternList);
       playerChessPatternListClone[player][patternIndex] = pattern;
       this.setState({ playerChessPatternList: playerChessPatternListClone });
+
+      // modify the board preview as well
+      if (this.state.mouseLocation.classList.contains("board_cell_button")) {
+        let forgedEvent = {
+          target: { id: this.state.mouseLocation.id }
+        };
+        this.previewChess(forgedEvent);
+      }
     }
     event.preventDefault();
     event.stopPropagation();

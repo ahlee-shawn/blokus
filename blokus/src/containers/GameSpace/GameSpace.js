@@ -2,6 +2,7 @@ import Board from "../Board/Board";
 import Scoreboard from "../ScoreBoard/ScoreBoard";
 import ControlPanel from "../ControlPanel/ControlPanel";
 import Rules from "../Rules/Rules";
+
 import "./GameSpace.css"
 
 const GameSpace = () => {

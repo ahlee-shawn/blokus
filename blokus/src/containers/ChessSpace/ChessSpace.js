@@ -2,9 +2,9 @@ import { useContext } from "react";
 import controlContext from "../../contexts/control-context";
 import ChessPiece from "../ChessPiece/ChessPiece";
 
-import "./ChessSpace.css"
-
 import _ from "lodash";
+
+import "./ChessSpace.css"
 
 const ChessSpace = () => {
 

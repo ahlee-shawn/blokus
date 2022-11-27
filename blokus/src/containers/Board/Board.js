@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import controlContext from "../../contexts/control-context";
 import BoardCell from "../BoardCell/BoardCell";
-import "./Board.css"
 
 import _ from "lodash";
+
+import "./Board.css"
 
 const Board = () => {
     const {

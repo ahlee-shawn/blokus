@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import controlContext from "../../contexts/control-context";
+
 import "./ScoreBoard.css"
 
 const ScoreBoard = () => {
@@ -24,19 +25,19 @@ const ScoreBoard = () => {
         <div className="score_board">
             <div>Score: </div>
             <div>
-                <button type="button" className="board_cell_button player_one_cell" id="board_cell_row_score_player1"></button>
+                <button type="button" className="score_cell_button player_one_cell" id="board_cell_row_score_player1"></button>
                 : {getScore("1")}
             </div>
             <div>
-                <button type="button" className="board_cell_button player_two_cell" id="board_cell_row_score_player2"></button>
+                <button type="button" className="score_cell_button player_two_cell" id="board_cell_row_score_player2"></button>
                 : {getScore("2")}
             </div>
             <div>
-                <button type="button" className="board_cell_button player_three_cell" id="board_cell_row_score_player3"></button>
+                <button type="button" className="score_cell_button player_three_cell" id="board_cell_row_score_player3"></button>
                 : {getScore("3")}
             </div>
             <div>
-                <button type="button" className="board_cell_button player_four_cell" id="board_cell_row_score_player4"></button>
+                <button type="button" className="score_cell_button player_four_cell" id="board_cell_row_score_player4"></button>
                 : {getScore("4")}
             </div>
         </div>
