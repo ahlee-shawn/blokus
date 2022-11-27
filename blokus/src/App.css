@@ -5,13 +5,13 @@
   align-items: center;
   padding-top: 1rem;
   padding-bottom: 1rem;
-  
+  height: 90%;
 }
 
 .game_container {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: space-evenly;
+  align-items: stretch;
   width: 95%;
   padding:0;
   flex-wrap: wrap;

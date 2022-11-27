@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
 import controlContext from "./contexts/control-context";
-import ControlPanel from "./containers/GameSpace/GameSpace";
-import GameSpace from "./containers/ControlPanel/ControlPanel";
+import GameSpace from "./containers/GameSpace/GameSpace";
+import ControlPanel from "./containers/ControlPanel/ControlPanel";
 
 import board from "./shared/board";
 import chess from "./shared/chess";
@@ -160,8 +160,8 @@ class App extends Component {
         >
           <div className="gui_container">
             <div className="game_container">
-              <ControlPanel />
               <GameSpace />
+              <ControlPanel />
             </div>
           </div>
         </controlContext.Provider>
