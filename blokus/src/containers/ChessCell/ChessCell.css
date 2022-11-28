@@ -1,0 +1,53 @@
+.chess_cell_button {
+    padding: 0;
+    margin: 0;
+    width: 0.85rem;
+    height: 0.85rem;
+    border: none;
+}
+
+.blue_cell {
+    background-color: blue;
+    border: 0.05rem solid black;
+}
+
+.yellow_cell {
+    background-color: yellow;
+    border: 0.05rem solid black;
+}
+
+.red_cell {
+    background-color: red;
+    border: 0.05rem solid black;
+}
+
+.green_cell {
+    background-color: green;
+    border: 0.05rem solid black;
+}
+
+.tranparent_cell {
+    background-color: transparent;
+    border: 0.05rem solid transparent;
+}
+
+button:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.highlight_border_top {
+    border-top: 0.15rem solid white;
+}
+
+.highlight_border_right {
+    border-right: 0.15rem solid white;
+}
+
+.highlight_border_bottom {
+    border-bottom: 0.15rem solid white;
+}
+
+.highlight_border_left {
+    border-left: 0.15rem solid white;
+}

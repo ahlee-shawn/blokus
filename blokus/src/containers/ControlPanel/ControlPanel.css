@@ -1,0 +1,17 @@
+.control_panel {
+    display: flex;
+    flex-direction: column;
+}
+
+.control_button {
+    margin: 0.5rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border: 0.1rem solid gray;
+    border-radius: 0.5rem;
+    text-align: center;
+}
+
+.control_text {
+    font-size: larger;
+}

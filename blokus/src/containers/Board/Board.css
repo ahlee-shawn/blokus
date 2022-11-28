@@ -1,0 +1,7 @@
+.board{
+    margin: 0;
+}
+
+.board_row {
+    display: flex;
+}
