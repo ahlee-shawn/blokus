@@ -1,0 +1,28 @@
+.chess_piece_blue, .chess_piece_yellow, .chess_piece_red, .chess_piece_green {
+    margin: 0.1rem;
+    border: 0.2rem solid transparent;
+}
+
+.selected_blue {
+    border: 0.2rem solid blue;
+    border-radius: 1rem;
+}
+
+.selected_yellow {
+    border: 0.2rem solid yellow;
+    border-radius: 1rem;
+}
+
+.selected_red {
+    border: 0.2rem solid red;
+    border-radius: 1rem;
+}
+
+.selected_green {
+    border: 0.2rem solid green;
+    border-radius: 1rem;
+}
+
+.chess_row {
+    display: flex;
+}
