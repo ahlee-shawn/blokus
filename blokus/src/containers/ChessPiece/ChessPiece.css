@@ -3,6 +3,10 @@
     border: 0.2rem solid transparent;
 }
 
+.disabled_chess_piece {
+    opacity: 0.3;
+}
+
 .selected_blue {
     border: 0.2rem solid blue;
     border-radius: 1rem;
