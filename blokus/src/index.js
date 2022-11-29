@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import App from './App';
 import Login from "./containers/Login/Login";
 import HomePage from "./containers/HomePage/HomePage";
+import Waiting from "./containers/HomePage/Waiting/Waiting";
 import appRoutes from './shared/appRoutes';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -16,6 +17,7 @@ root.render(
         <Route path={appRoutes.login} element={<Login />} />
         <Route path={appRoutes.home} element={<HomePage />} />
         <Route path={appRoutes.game} element={<App />} />
+        <Route path={appRoutes.waiting} element={<Waiting />} />
       </Routes>
     </Router>
   </React.StrictMode>

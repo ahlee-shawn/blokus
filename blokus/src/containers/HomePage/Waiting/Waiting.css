@@ -1,0 +1,10 @@
+.loading {
+    clip-path: inset(0 3ch 0 0);
+    animation: l 2s steps(4) infinite;
+}
+
+@keyframes l {
+    to {
+        clip-path: inset(0 -2ch 0 0)
+    }
+}

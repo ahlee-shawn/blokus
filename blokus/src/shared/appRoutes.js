@@ -1,7 +1,8 @@
 const routes = {
     login: "/",
     home: "/home",
-    game: "/game",
+    game: "/game/:id",
+    waiting: "/waiting/:id"
 };
 
 export default routes;

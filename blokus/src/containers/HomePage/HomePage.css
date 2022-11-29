@@ -43,7 +43,7 @@
 .homepage_gamebox form {
     font-weight: bold;
     font-size: 22px;
-    margin:15px;
+    margin:10px;
 }
 
 .homepage_gamebox input[type=text] {
@@ -67,14 +67,13 @@
     border-radius: 5px;
 }
 
-.homepage_btn {
+.homepage_logout {
     padding: 10px;
     font-size: 18px;
-    margin-top: 10px;
     border: none;
     color: white;
     background-color: black;
-    margin: 0px 170px;
+    margin: 5px 170px;
     border-radius: 5px;
 }
 
