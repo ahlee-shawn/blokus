@@ -1,20 +1,8 @@
 import { initializeApp } from "firebase/app";
-import {
-    GoogleAuthProvider,
-    getAuth,
-    signInWithPopup,
-    signOut,
-} from "firebase/auth";
-import {
-    getFirestore,
-    query,
-    getDocs,
-    collection,
-    where,
-    addDoc,
-} from "firebase/firestore";
+import { GoogleAuthProvider, getAuth, signInWithPopup, signOut } from "firebase/auth";
+import { getFirestore, query, getDocs, collection, where, addDoc } from "firebase/firestore";
 
-const firebaseConfig = {
+const Config = {
     apiKey: "AIzaSyD8lEbCyxdj4VWy7id-VNzws9guE0GK7AU",
     authDomain: "blokus-75a07.firebaseapp.com",
     projectId: "blokus-75a07",
@@ -23,7 +11,7 @@ const firebaseConfig = {
     appId: "1:1031001896653:web:12b840b2c4384fdadb9b84"
 };
 
-const app = initializeApp(firebaseConfig);
+const app = initializeApp(Config);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const googleProvider = new GoogleAuthProvider();
@@ -38,7 +26,6 @@ const signInWithGoogle = async () => {
             await addDoc(collection(db, "users"), {
                 uid: user.uid,
                 name: user.displayName,
-                authProvider: "google",
                 email: user.email,
             });
         }
