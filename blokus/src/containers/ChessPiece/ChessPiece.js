@@ -11,7 +11,8 @@ const ChessPiece = (props) => {
     const {
         selectChess,
         selectedChessId,
-        playerChessPatternList
+        playerChessPatternList,
+        currPlayer,
     } = useContext(controlContext);
 
     const rowLength = 5;
@@ -61,7 +62,7 @@ const ChessPiece = (props) => {
 
     return (
         // <div className={ `${"chess_piece_" + props.color} ${selectedChessId === id ? "selected_" + props.color : ""}` } id={id} onClick={(e) => selectChess(e)}>
-        <div className={"chess_piece_" + props.color} id={id} onClick={(e) => selectChess(e)}>
+        <div className={`"chess_piece_" + ${props.color} ${currPlayer === props.player ? "" : "disabled_chess_piece"}`} id={id} onClick={currPlayer === props.player ? (e) => selectChess(e) : undefined}>
             {_.times(rowLength).map((row) => {
                 return (
                     <div key={"chess_row-"+row} className="chess_row">{pattern[row].map((visible, col) => {

@@ -15,7 +15,7 @@ class App extends Component {
   state = {
     selectedChessId: "",
     selectedChessPattern: [[]],
-    currPlayer: "",
+    currPlayer: "1",
     playerChessList: [
       _.times(21, _.constant(true)),
       _.times(21, _.constant(true)),
@@ -122,7 +122,6 @@ class App extends Component {
     const divId = event.nativeEvent.path[2].id;
     this.setState({ selectedChessId: divId });
     let player = divId.split("_")[4];
-    this.setState({ currPlayer: player.substr(player.length - 1) });
     this.setState({ selectedChessPattern: this.state.playerChessPatternList[parseInt(player.substr(player.length - 1)) - 1][parseInt(divId.split("_")[3])] });
   }
 
@@ -312,8 +311,10 @@ class App extends Component {
         this.setState({ playerChessList: playerChessListClone });
         this.setState({ selectedChessId: "" });
         this.setState({ selectedChessPattern: [[]] });
-        this.setState({ currPlayer: "" });
         this.setState({ invalidPlacementMsg: "" });
+
+        // rotate player
+        this.setState({ currPlayer: ((this.state.currPlayer) % 4 + 1).toString()});
       }
     }
   }
