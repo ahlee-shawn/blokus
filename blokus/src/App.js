@@ -31,6 +31,8 @@ class App extends Component {
     gameBoard: _.cloneDeep(board),
     viewBoard: _.cloneDeep(board),
     mouseLocation: {},
+    playerScore: [0, 0, 0, 0],
+    invalidPlacementMsg: "",
   }
 
   constructor() {
@@ -182,8 +184,98 @@ class App extends Component {
     if (!this.canPreviewChess(mouseRow, mouseCol)) {
       return false
     }
+
     // TODO: check if the chess can be placed here
-    return true
+    const pattern = this.state.selectedChessPattern;
+    const patternLength = 5;
+    const offset = 2;
+    const gameBoard = this.state.gameBoard;
+    const player = this.state.currPlayer;
+    const playerScore = this.state.playerScore;
+
+    var touchesSelfBlock = false;
+    var coversCorner = false;
+    var touchesCorner = false;
+
+    // console.log(gameBoard);
+    for (var i = 0; i < patternLength; i++) {
+      for (var j = 0; j <= patternLength; j++) {
+        if (pattern[i][j] === "1") {
+          // check if the space is already taken
+          if (gameBoard[mouseRow - offset + i][mouseCol - offset + j] !== '0') {
+            this.setState({ invalidPlacementMsg: "Cannot overlap with other blocks" });
+            return false;
+          }
+
+          // check if touches a block that belongs to the same player
+          // top
+          if (mouseRow - offset + i - 1 >= 0 && gameBoard[mouseRow - offset + i - 1][mouseCol - offset + j] === player) {
+            touchesSelfBlock = true;
+          }
+
+          // left
+          if (mouseCol - offset + j - 1 >= 0 && gameBoard[mouseRow - offset + i][mouseCol - offset + j - 1] === player) {
+            touchesSelfBlock = true;
+          }
+
+          // bottom
+          if (mouseRow - offset + i + 1 <= 19 && gameBoard[mouseRow - offset + i + 1][mouseCol - offset + j] === player) {
+            touchesSelfBlock = true;
+          }
+
+          // right
+          if (mouseCol - offset + j + 1 <= 19 && gameBoard[mouseRow - offset + i][mouseCol - offset + j + 1] === player) {
+            touchesSelfBlock = true;
+          }
+
+          if (touchesSelfBlock) {
+            this.setState({ invalidPlacementMsg: "Cannot touch same color blocks with edge" });
+            return false;
+          }
+
+          // check if is connected to corner or existing block
+          if (playerScore[parseInt(player) - 1] === 0) { // is placing first block
+            // check if covers the corner
+            // player 1: bottom left
+            if (player === "1" && mouseRow - offset + i === 19 && mouseCol - offset + j === 0) {
+              coversCorner = true;
+            }
+
+            // player 2: top left
+            if (player === "2" && mouseRow - offset + i === 0 && mouseCol - offset + j === 0) {
+              coversCorner = true;
+            }
+
+            // player 3: top right
+            if (player === "3" && mouseRow - offset + i === 0 && mouseCol - offset + j === 19) {
+              coversCorner = true;
+            }
+            
+            // player 4: bottom right
+            if (player === "4" && mouseRow - offset + i === 19 && mouseCol - offset + j === 19) {
+              coversCorner = true;
+            }
+          } else {
+            // check if touches the corner of an existing piece
+            if (mouseRow - offset + i - 1 >= 0 && mouseCol - offset + j - 1 >= 0 && gameBoard[mouseRow - offset + i - 1][mouseCol - offset + j - 1] === player) { // top-left
+              touchesCorner = true;
+            } else if (mouseRow - offset + i + 1 <= 19 && mouseCol - offset + j - 1 >= 0 && gameBoard[mouseRow - offset + i + 1][mouseCol - offset + j - 1] === player) { // bottom-left
+              touchesCorner = true;
+            } else if (mouseRow - offset + i - 1 >= 0 && mouseCol - offset + j + 1 <= 19 && gameBoard[mouseRow - offset + i - 1][mouseCol - offset + j + 1] === player) { // top-right
+              touchesCorner = true;
+            } else if (mouseRow - offset + i + 1 <= 19 && mouseCol - offset + j + 1 <= 19 && gameBoard[mouseRow - offset + i + 1][mouseCol - offset + j + 1] === player) { // bottom-right
+              touchesCorner = true;
+            }
+          }
+        }
+      }
+    }
+
+    if (!coversCorner && !touchesCorner) {
+      this.setState({ invalidPlacementMsg: "Must start at the corner and consecutive blocks must touch existing same color block with only corner-to-corner contact allowed" });
+    }
+
+    return (coversCorner || touchesCorner);
   }
 
   renderPlaceChess = (mouseRow, mouseCol) => {
@@ -192,14 +284,21 @@ class App extends Component {
     const offset = 2;
     var gameBoardClone = _.cloneDeep(this.state.gameBoard);
     const player = this.state.currPlayer;
+    var numOfSquares = 0;
     for (var i = 0; i < patternLength; i++) {
       for (var j = 0; j <= patternLength; j++) {
         if (pattern[i][j] === "1") {
           gameBoardClone[mouseRow - offset + i][mouseCol - offset + j] = player;
+          numOfSquares++;
         }
       }
     }
     this.setState({ gameBoard: gameBoardClone });
+
+    // update score
+    var playerScore = { ...this.state.playerScore };
+    playerScore[parseInt(player) - 1] += numOfSquares;
+    this.setState({ playerScore: playerScore });
   }
 
   placeChess = (event) => {
@@ -214,6 +313,7 @@ class App extends Component {
         this.setState({ selectedChessId: "" });
         this.setState({ selectedChessPattern: [[]] });
         this.setState({ currPlayer: "" });
+        this.setState({ invalidPlacementMsg: "" });
       }
     }
   }
@@ -227,6 +327,8 @@ class App extends Component {
       playerChessPatternList,
       gameBoard,
       viewBoard,
+      playerScore,
+      invalidPlacementMsg,
     } = this.state;
 
     return (
@@ -244,6 +346,8 @@ class App extends Component {
             playerChessPatternList,
             gameBoard,
             viewBoard,
+            playerScore,
+            invalidPlacementMsg,
           }}
         >
           <div className="gui_container">

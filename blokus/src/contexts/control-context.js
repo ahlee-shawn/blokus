@@ -12,6 +12,8 @@ const controlContext = createContext({
     playerChessPatternList: [[]],
     gameBoard: [],
     viewBoard: [],
+    playerScore: [],
+    invalidPlacementMsg: "",
 });
 
 export default controlContext;
