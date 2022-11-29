@@ -1,13 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
-import App from './App';
 import reportWebVitals from './reportWebVitals';
+import App from './App';
+import Login from "./containers/Login/Login";
+import HomePage from "./containers/HomePage/HomePage";
+import appRoutes from './shared/appRoutes';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <Router>
+      <Routes>
+        <Route path={appRoutes.login} element={<Login />} />
+        <Route path={appRoutes.home} element={<HomePage />} />
+        <Route path={appRoutes.game} element={<App />} />
+      </Routes>
+    </Router>
   </React.StrictMode>
 );
 

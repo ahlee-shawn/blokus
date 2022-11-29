@@ -1,0 +1,83 @@
+.homepage {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.homepage_container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: #dcdcdc;
+    padding: 170px;
+}
+
+.homepage_container h1 {
+    font-size: 50px;
+    margin: 5px;
+}
+
+.homepage_container h3 {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.homepage_container p {
+    font-size: 20px;
+    margin: 5px;
+}
+
+.homepage_login_name {
+    text-decoration: underline;
+}
+
+.homepage_gamebox {
+    border: 10px solid grey;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.homepage_gamebox form {
+    font-weight: bold;
+    font-size: 22px;
+    margin:15px;
+}
+
+.homepage_gamebox input[type=text] {
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.homepage_gamebox button {
+    border-radius: 5px;
+    padding: 8px;
+}
+
+.homepage_createbtn {
+    margin: 20px;
+    padding: 10px;
+    font-size: 18px;
+    border: none;
+    color: black;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.homepage_btn {
+    padding: 10px;
+    font-size: 18px;
+    margin-top: 10px;
+    border: none;
+    color: white;
+    background-color: black;
+    margin: 0px 170px;
+    border-radius: 5px;
+}
+
+.homepage button:hover {
+    cursor: pointer;
+}
