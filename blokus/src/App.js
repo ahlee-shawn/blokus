@@ -32,6 +32,7 @@ class App extends Component {
     viewBoard: _.cloneDeep(board),
     mouseLocation: {},
     playerScore: [0, 0, 0, 0],
+    invalidPlacementMsg: "",
   }
 
   constructor() {
@@ -192,6 +193,7 @@ class App extends Component {
     const player = this.state.currPlayer;
     const playerScore = this.state.playerScore;
 
+    var touchesSelfBlock = false;
     var coversCorner = false;
     var touchesCorner = false;
 
@@ -201,30 +203,37 @@ class App extends Component {
         if (pattern[i][j] === "1") {
           // check if the space is already taken
           if (gameBoard[mouseRow - offset + i][mouseCol - offset + j] !== '0') {
+            this.setState({ invalidPlacementMsg: "Cannot overlap with other blocks" });
             return false;
           }
 
           // check if touches a block that belongs to the same player
           // top
           if (mouseRow - offset + i - 1 >= 0 && gameBoard[mouseRow - offset + i - 1][mouseCol - offset + j] === player) {
-            return false;
+            touchesSelfBlock = true;
           }
 
           // left
           if (mouseCol - offset + j - 1 >= 0 && gameBoard[mouseRow - offset + i][mouseCol - offset + j - 1] === player) {
-            return false;
+            touchesSelfBlock = true;
           }
 
           // bottom
           if (mouseRow - offset + i + 1 <= 19 && gameBoard[mouseRow - offset + i + 1][mouseCol - offset + j] === player) {
-            return false;
+            touchesSelfBlock = true;
           }
 
           // right
           if (mouseCol - offset + j + 1 <= 19 && gameBoard[mouseRow - offset + i][mouseCol - offset + j + 1] === player) {
+            touchesSelfBlock = true;
+          }
+
+          if (touchesSelfBlock) {
+            this.setState({ invalidPlacementMsg: "Cannot touch same color blocks with edge" });
             return false;
           }
 
+          // check if is connected to corner or existing block
           if (playerScore[parseInt(player) - 1] === 0) { // is placing first block
             // check if covers the corner
             // player 1: bottom left
@@ -262,6 +271,9 @@ class App extends Component {
       }
     }
 
+    if (!coversCorner && !touchesCorner) {
+      this.setState({ invalidPlacementMsg: "Must start at the corner and consecutive blocks must touch existing same color block with only corner-to-corner contact allowed" });
+    }
 
     return (coversCorner || touchesCorner);
   }
@@ -301,8 +313,7 @@ class App extends Component {
         this.setState({ selectedChessId: "" });
         this.setState({ selectedChessPattern: [[]] });
         this.setState({ currPlayer: "" });
-      } else {
-        console.log("cannot place chess");
+        this.setState({ invalidPlacementMsg: "" });
       }
     }
   }
@@ -317,6 +328,7 @@ class App extends Component {
       gameBoard,
       viewBoard,
       playerScore,
+      invalidPlacementMsg,
     } = this.state;
 
     return (
@@ -335,6 +347,7 @@ class App extends Component {
             gameBoard,
             viewBoard,
             playerScore,
+            invalidPlacementMsg,
           }}
         >
           <div className="gui_container">

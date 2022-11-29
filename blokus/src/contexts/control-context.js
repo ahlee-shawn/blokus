@@ -13,6 +13,7 @@ const controlContext = createContext({
     gameBoard: [],
     viewBoard: [],
     playerScore: [],
+    invalidPlacementMsg: "",
 });
 
 export default controlContext;
