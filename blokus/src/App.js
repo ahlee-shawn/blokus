@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
+import { useParams } from 'react-router';
 
 import controlContext from "./contexts/control-context";
 import GameSpace from "./containers/GameSpace/GameSpace";
@@ -7,9 +8,16 @@ import ChessPanel from "./containers/ChessPanel/ChessPanel";
 import board from "./shared/board";
 import chess from "./shared/chess";
 
+import { updateGame, getGameInfo, db } from "./firebase";
+import { onSnapshot, doc } from "firebase/firestore";
+
 import _ from "lodash";
 
 import "./App.css";
+
+function withParams(Component) {
+  return props => <Component {...props} params={useParams()} />;
+}
 
 class App extends Component {
   state = {
@@ -33,6 +41,7 @@ class App extends Component {
     mouseLocation: {},
     playerScore: [0, 0, 0, 0],
     invalidPlacementMsg: "",
+    sessionId: "",
   }
 
   constructor() {
@@ -41,9 +50,40 @@ class App extends Component {
     this.mouseMoveOnBoard = this.mouseMoveOnBoard.bind(this);
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     document.addEventListener("keydown", this.rotateOrFlipChess, false);
     document.addEventListener("mousemove", this.mouseMoveOnBoard, false);
+
+    // get session ID
+    const sessionId = this.props.params.id;
+    this.setState({ sessionId: sessionId })
+
+    // get game status
+    const gameInfo = await getGameInfo(sessionId);
+    console.log(gameInfo);
+
+    if (gameInfo.currPlayer === undefined) { // new game
+      // update game info with initial set up
+      updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
+    } else { // existing game
+      // load game info
+      this.setState({ currPlayer: gameInfo.currPlayer })
+      this.setState({ gameBoard: JSON.parse(gameInfo.gameBoard) })
+      this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
+      this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
+      this.setState({ playerScore: gameInfo.playerScore })
+
+      console.log(JSON.parse(gameInfo.gameBoard))
+    }
+
+    const unsubscribeDb = onSnapshot(doc(db, "games", sessionId), (doc) => {
+      console.log("DB updated");
+      this.setState({ currPlayer: doc.data().currPlayer })
+      this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
+      this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
+      this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
+      this.setState({ playerScore: doc.data().playerScore })
+    });
   }
 
   mouseMoveOnBoard = (event) => {
@@ -249,7 +289,7 @@ class App extends Component {
             if (player === "3" && mouseRow - offset + i === 0 && mouseCol - offset + j === 19) {
               coversCorner = true;
             }
-            
+
             // player 4: bottom right
             if (player === "4" && mouseRow - offset + i === 19 && mouseCol - offset + j === 19) {
               coversCorner = true;
@@ -298,6 +338,9 @@ class App extends Component {
     var playerScore = { ...this.state.playerScore };
     playerScore[parseInt(player) - 1] += numOfSquares;
     this.setState({ playerScore: playerScore });
+
+    // update DB
+    updateGame(this.state.sessionId, { gameBoard: JSON.stringify(gameBoardClone), playerScore: playerScore });
   }
 
   placeChess = (event) => {
@@ -314,7 +357,11 @@ class App extends Component {
         this.setState({ invalidPlacementMsg: "" });
 
         // rotate player
-        this.setState({ currPlayer: ((this.state.currPlayer) % 4 + 1).toString()});
+        const currPlayer = ((this.state.currPlayer) % 4 + 1).toString();
+        this.setState({ currPlayer: currPlayer });
+
+        // update DB
+        updateGame(this.state.sessionId, { playerChessList: JSON.stringify(playerChessListClone), currPlayer: currPlayer });
       }
     }
   }
@@ -364,4 +411,4 @@ class App extends Component {
 
 }
 
-export default App;
+export default withParams(App);
