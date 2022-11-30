@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db, logout } from "../../firebase";
 import "./HomePage.css";
-import { doc, setDoc, getDoc, arrayUnion, updateDoc} from "firebase/firestore";
+import { doc, setDoc, getDoc, arrayUnion, updateDoc } from "firebase/firestore";
 import appRoutes from '../../shared/appRoutes';
 
 function HomePage() {
     const [user] = useAuthState(auth);
     const [name, setName] = useState("");
+    const [error, setError] = useState("");
     const navigate = useNavigate();
     const gameIdRef = useRef(null);
 
@@ -24,7 +25,7 @@ function HomePage() {
             });
             navigate("/waiting/" + gid);
         } else {
-            console.log("No such document!");
+            setError("No such Game ID, please try another one!");
         }
     };
 
@@ -53,7 +54,9 @@ function HomePage() {
                     <br />occupying most of the board with pieces of their colour</p>
                 <h3>Logged in as <span className="homepage_login_name">{name}</span></h3>
                 <div className="homepage_gamebox">
-                    <button className="homepage_createbtn" onClick={createGame}>Create New Game</button>
+                    <button className="homepage_createbtn" onClick={createGame}>
+                        Create New Game
+                    </button>
                     <form onSubmit={handleSubmit}>
                         <label>
                             Existing Game ID:
@@ -67,6 +70,7 @@ function HomePage() {
                         </label>
                         <button type="submit">Join</button>
                     </form>
+                    <p>{error}</p>
                 </div>
                 <button className="homepage_logout" onClick={logout}>
                     Logout

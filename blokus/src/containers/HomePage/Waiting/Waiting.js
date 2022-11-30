@@ -22,6 +22,9 @@ function Waiting() {
     };
 
     useEffect(() => {
+        if (!user) {
+            return navigate(appRoutes.login);
+        }
         onSnapshot(doc(db, "games", id), (doc) => {
             var pnum = doc.data().players.length;
             if (pnum === 4) {
