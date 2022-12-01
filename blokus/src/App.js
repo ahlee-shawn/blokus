@@ -49,6 +49,7 @@ class App extends Component {
     uid: undefined,
     userName: "",
     playersUid: [],
+    redirect: false,
   }
 
   constructor() {
@@ -65,30 +66,17 @@ class App extends Component {
     const sessionId = this.props.params.id;
     this.setState({ sessionId: sessionId })
 
-    // get user ID
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        // User is signed in, see docs for a list of available properties
-        // https://firebase.google.com/docs/reference/js/firebase.User
-        const uid = user.uid;
-        const userName = user.displayName;
-        console.log(uid);
-        this.setState({ uid: uid });
-        this.setState({ userName: userName });
-        // ...
-      } else {
-        // User is signed out -> redirect to login
-        this.setState({ uid: null });
-      }
-    });
-
     // get game status
     const gameInfo = await getGameInfo(sessionId);
     console.log(gameInfo);
 
+    // redirect to home if session ID does not exist or has less than four players
+    if (gameInfo.players === undefined || gameInfo.players.length < 4) {
+      this.setState({ redirect: true });
+    }
+
     // store players uid
-    this.setState({playersUid: gameInfo.players});
+    this.setState({ playersUid: gameInfo.players });
 
     if (gameInfo.currPlayer === undefined) { // new game
       // update game info with initial set up
@@ -100,12 +88,32 @@ class App extends Component {
       this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
       this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
       this.setState({ playerScore: gameInfo.playerScore })
-
-      console.log(JSON.parse(gameInfo.gameBoard))
     }
 
+    // get user ID
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        const userName = user.displayName;
+
+        // check if user if in player list
+        if (gameInfo.players.findIndex((playersUid) => uid === playersUid) == -1) { // user not in player list 
+          this.setState({ redirect: true });
+        } else {
+          this.setState({ uid: uid });
+          this.setState({ userName: userName });
+        }
+      } else {
+        // User is signed out -> redirect to login
+        this.setState({ redirect: true });
+      }
+    });
+
+    // listen to DB update
     const unsubscribeDb = onSnapshot(doc(db, "games", sessionId), (doc) => {
-      console.log("DB updated");
       this.setState({ currPlayer: doc.data().currPlayer })
       this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
       this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
@@ -409,15 +417,11 @@ class App extends Component {
       viewBoard,
       playerScore,
       invalidPlacementMsg,
-      uid,
       userName,
+      redirect,
     } = this.state;
 
-    if (uid === undefined) {
-      return null; //or Loading component
-    }
-
-    if (uid === null) { // has not signed in
+    if (redirect === true) {
       return ( //
         <Navigate to={appRoutes.login} />
       );
