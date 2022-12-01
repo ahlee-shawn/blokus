@@ -1,5 +1,6 @@
 import React, { Component, useEffect } from "react";
 import { useParams } from 'react-router';
+import { Navigate } from 'react-router-dom';
 
 import controlContext from "./contexts/control-context";
 import GameSpace from "./containers/GameSpace/GameSpace";
@@ -10,6 +11,9 @@ import chess from "./shared/chess";
 
 import { updateGame, getGameInfo, db } from "./firebase";
 import { onSnapshot, doc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import appRoutes from './shared/appRoutes';
 
 import _ from "lodash";
 
@@ -42,6 +46,9 @@ class App extends Component {
     playerScore: [0, 0, 0, 0],
     invalidPlacementMsg: "",
     sessionId: "",
+    uid: undefined,
+    userName: "",
+    playersUid: [],
   }
 
   constructor() {
@@ -58,9 +65,30 @@ class App extends Component {
     const sessionId = this.props.params.id;
     this.setState({ sessionId: sessionId })
 
+    // get user ID
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+        const userName = user.displayName;
+        console.log(uid);
+        this.setState({ uid: uid });
+        this.setState({ userName: userName });
+        // ...
+      } else {
+        // User is signed out -> redirect to login
+        this.setState({ uid: null });
+      }
+    });
+
     // get game status
     const gameInfo = await getGameInfo(sessionId);
     console.log(gameInfo);
+
+    // store players uid
+    this.setState({playersUid: gameInfo.players});
 
     if (gameInfo.currPlayer === undefined) { // new game
       // update game info with initial set up
@@ -84,6 +112,10 @@ class App extends Component {
       this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
       this.setState({ playerScore: doc.data().playerScore })
     });
+  }
+
+  getPlayerId = () => {
+    return (this.state.playersUid.findIndex((uid) => uid === this.state.uid) + 1).toString();
   }
 
   mouseMoveOnBoard = (event) => {
@@ -377,7 +409,19 @@ class App extends Component {
       viewBoard,
       playerScore,
       invalidPlacementMsg,
+      uid,
+      userName,
     } = this.state;
+
+    if (uid === undefined) {
+      return null; //or Loading component
+    }
+
+    if (uid === null) { // has not signed in
+      return ( //
+        <Navigate to={appRoutes.login} />
+      );
+    }
 
     return (
       <React.Fragment>
@@ -396,6 +440,8 @@ class App extends Component {
             viewBoard,
             playerScore,
             invalidPlacementMsg,
+            userName,
+            getPlayerId: this.getPlayerId,
           }}
         >
           <div className="gui_container">
