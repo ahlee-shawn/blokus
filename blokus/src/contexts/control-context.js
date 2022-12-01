@@ -16,6 +16,8 @@ const controlContext = createContext({
     invalidPlacementMsg: "",
     currPlayerName: "",
     getPlayerId: () => {},
+    skipTurn: () => {},
+    endGame: () => {},
 });
 
 export default controlContext;

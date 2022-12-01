@@ -9,7 +9,7 @@ import ChessPanel from "./containers/ChessPanel/ChessPanel";
 import board from "./shared/board";
 import chess from "./shared/chess";
 
-import { updateGame, getGameInfo, db } from "./firebase";
+import { updateGame, getGameInfo, db, deleteGame } from "./firebase";
 import { onSnapshot, doc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 
@@ -71,25 +71,25 @@ class App extends Component {
     console.log(gameInfo);
 
     // redirect to home if session ID does not exist or has less than four players
-    if (gameInfo.players === undefined || gameInfo.players.length < 4) {
+    if (gameInfo === undefined || gameInfo.players.length < 4) {
       this.setState({ redirect: true });
-    }
-
-    // store players uid
-    this.setState({ playersUid: gameInfo.players });
-
-    if (gameInfo.currPlayer === undefined) { // new game
-      // update game info with initial set up
-      updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
-      this.setState({ currPlayerName: gameInfo.players[0].displayName })
-    } else { // existing game
-      // load game info
-      this.setState({ currPlayer: gameInfo.currPlayer })
-      this.setState({ currPlayerName: gameInfo.players[gameInfo.currPlayer - 1].displayName })
-      this.setState({ gameBoard: JSON.parse(gameInfo.gameBoard) })
-      this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
-      this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
-      this.setState({ playerScore: gameInfo.playerScore })
+    } else {
+      // store players uid
+      this.setState({ playersUid: gameInfo.players });
+  
+      if (gameInfo.currPlayer === undefined) { // new game
+        // update game info with initial set up
+        updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
+        this.setState({ currPlayerName: gameInfo.players[0].displayName })
+      } else { // existing game
+        // load game info
+        this.setState({ currPlayer: gameInfo.currPlayer })
+        this.setState({ currPlayerName: gameInfo.players[gameInfo.currPlayer - 1].displayName })
+        this.setState({ gameBoard: JSON.parse(gameInfo.gameBoard) })
+        this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
+        this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
+        this.setState({ playerScore: gameInfo.playerScore })
+      }
     }
 
     // get user ID
@@ -114,12 +114,16 @@ class App extends Component {
 
     // listen to DB update
     const unsubscribeDb = onSnapshot(doc(db, "games", sessionId), (doc) => {
-      this.setState({ currPlayer: doc.data().currPlayer })
-      this.setState({ currPlayerName: doc.data().players[doc.data().currPlayer - 1].displayName })
-      this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
-      this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
-      this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
-      this.setState({ playerScore: doc.data().playerScore })
+      if (doc.data() === undefined) { // redirect to home page if game deleted
+        this.setState({ redirect: true });
+      } else {
+        this.setState({ currPlayer: doc.data().currPlayer })
+        this.setState({ currPlayerName: doc.data().players[doc.data().currPlayer - 1].displayName })
+        this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
+        this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
+        this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
+        this.setState({ playerScore: doc.data().playerScore })
+      }
     });
   }
 
@@ -398,13 +402,25 @@ class App extends Component {
         this.setState({ invalidPlacementMsg: "" });
 
         // rotate player
-        const currPlayer = ((this.state.currPlayer) % 4 + 1).toString();
-        this.setState({ currPlayer: currPlayer });
+        const nextPlayer = ((this.state.currPlayer) % 4 + 1).toString();
+        this.setState({ currPlayer: nextPlayer });
 
         // update DB
-        updateGame(this.state.sessionId, { playerChessList: JSON.stringify(playerChessListClone), currPlayer: currPlayer });
+        updateGame(this.state.sessionId, { playerChessList: JSON.stringify(playerChessListClone), currPlayer: nextPlayer });
       }
     }
+  }
+
+  skipTurn = () => {
+    const nextPlayer = ((this.state.currPlayer) % 4 + 1).toString();
+    this.setState({ currPlayer: nextPlayer });
+
+    // update DB
+    updateGame(this.state.sessionId, { currPlayer: nextPlayer });
+  }
+
+  endGame = () => {
+    deleteGame(this.state.sessionId);
   }
 
   render() {
@@ -447,6 +463,8 @@ class App extends Component {
             invalidPlacementMsg,
             currPlayerName,
             getPlayerId: this.getPlayerId,
+            skipTurn: this.skipTurn,
+            endGame: this.endGame,
           }}
         >
           <div className="gui_container">
