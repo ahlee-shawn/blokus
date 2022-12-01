@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { GoogleAuthProvider, getAuth, signInWithPopup, signOut } from "firebase/auth";
-import { getFirestore, query, getDocs, collection, where, addDoc, getDoc, doc, updateDoc } from "firebase/firestore";
+import { getFirestore, query, getDocs, collection, where, addDoc, getDoc, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 // const Config = {
 //     apiKey: "AIzaSyD8lEbCyxdj4VWy7id-VNzws9guE0GK7AU",
@@ -53,18 +53,26 @@ const getGameInfo = async (sessionId) => {
     const q = doc(db, "games", sessionId)
     const gameDoc = await getDoc(q);
 
-    var gameInfo = {
-        players: gameDoc.data().players,
-        currPlayer: gameDoc.data().currPlayer,
-        gameBoard: gameDoc.data().gameBoard,
-        playerChessList: gameDoc.data().playerChessList,
-        playerScore: gameDoc.data().playerScore,
-    };
-    return gameInfo;
+    if (gameDoc.data() !== undefined) {
+        var gameInfo = {
+            players: gameDoc.data().players,
+            currPlayer: gameDoc.data().currPlayer,
+            gameBoard: gameDoc.data().gameBoard,
+            playerChessList: gameDoc.data().playerChessList,
+            playerScore: gameDoc.data().playerScore,
+        };
+        return gameInfo;
+    } else {
+        return undefined;
+    }
 }
 
 const updateGame = async (sessionId, updateInfo) => {
     await updateDoc(doc(db, "games", sessionId), updateInfo);
+}
+
+const deleteGame = async (sessionId) => {
+    await deleteDoc(doc(db, "games", sessionId));
 }
 
 export {
@@ -74,4 +82,5 @@ export {
     logout,
     getGameInfo,
     updateGame,
+    deleteGame,
 };

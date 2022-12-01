@@ -12,6 +12,10 @@
     text-align: center;
 }
 
+.control_button:hover {
+    cursor: pointer;
+}
+
 .control_text {
     font-size: larger;
 }
