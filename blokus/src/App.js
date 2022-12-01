@@ -47,7 +47,7 @@ class App extends Component {
     invalidPlacementMsg: "",
     sessionId: "",
     uid: undefined,
-    userName: "",
+    currPlayerName: "",
     playersUid: [],
     redirect: false,
   }
@@ -81,9 +81,11 @@ class App extends Component {
     if (gameInfo.currPlayer === undefined) { // new game
       // update game info with initial set up
       updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
+      this.setState({ currPlayerName: gameInfo.players[0].displayName })
     } else { // existing game
       // load game info
       this.setState({ currPlayer: gameInfo.currPlayer })
+      this.setState({ currPlayerName: gameInfo.players[gameInfo.currPlayer - 1].displayName })
       this.setState({ gameBoard: JSON.parse(gameInfo.gameBoard) })
       this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
       this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
@@ -97,14 +99,12 @@ class App extends Component {
         // User is signed in, see docs for a list of available properties
         // https://firebase.google.com/docs/reference/js/firebase.User
         const uid = user.uid;
-        const userName = user.displayName;
 
         // check if user if in player list
-        if (gameInfo.players.findIndex((playersUid) => uid === playersUid) == -1) { // user not in player list 
+        if (gameInfo.players.findIndex((player) => player.uid === uid) == -1) { // user not in player list 
           this.setState({ redirect: true });
         } else {
           this.setState({ uid: uid });
-          this.setState({ userName: userName });
         }
       } else {
         // User is signed out -> redirect to login
@@ -115,6 +115,7 @@ class App extends Component {
     // listen to DB update
     const unsubscribeDb = onSnapshot(doc(db, "games", sessionId), (doc) => {
       this.setState({ currPlayer: doc.data().currPlayer })
+      this.setState({ currPlayerName: doc.data().players[doc.data().currPlayer - 1].displayName })
       this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
       this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
       this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
@@ -123,7 +124,7 @@ class App extends Component {
   }
 
   getPlayerId = () => {
-    return (this.state.playersUid.findIndex((uid) => uid === this.state.uid) + 1).toString();
+    return (this.state.playersUid.findIndex((player) => player.uid === this.state.uid) + 1).toString();
   }
 
   mouseMoveOnBoard = (event) => {
@@ -417,7 +418,7 @@ class App extends Component {
       viewBoard,
       playerScore,
       invalidPlacementMsg,
-      userName,
+      currPlayerName,
       redirect,
     } = this.state;
 
@@ -444,7 +445,7 @@ class App extends Component {
             viewBoard,
             playerScore,
             invalidPlacementMsg,
-            userName,
+            currPlayerName,
             getPlayerId: this.getPlayerId,
           }}
         >

@@ -6,12 +6,12 @@ import "./Message.css"
 const Message = () => {
     const {
         invalidPlacementMsg,
-        userName,
+        currPlayerName,
     } = useContext(controlContext);
 
     return (
         <div className="message">
-            <p id="curPlayerMsg">Current player: {userName}</p>
+            <p id="curPlayerMsg">Current player: {currPlayerName}</p>
             {invalidPlacementMsg !== "" &&
                 <p id="invalidPlacementMsg">{invalidPlacementMsg}</p>
             }
