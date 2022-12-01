@@ -14,6 +14,8 @@ const controlContext = createContext({
     viewBoard: [],
     playerScore: [],
     invalidPlacementMsg: "",
+    currPlayerName: "",
+    getPlayerId: () => {},
 });
 
 export default controlContext;
