@@ -12,7 +12,7 @@
     flex-direction: column;
     text-align: center;
     background-color: #dcdcdc;
-    padding: 170px;
+    padding: 10px 170px;
 }
 
 .homepage_container h1 {
@@ -22,7 +22,7 @@
 
 .homepage_container h3 {
     font-size: 20px;
-    margin: 5px;
+    margin: 0px;
 }
 
 .homepage_container p {
@@ -43,7 +43,7 @@
 .homepage_gamebox form {
     font-weight: bold;
     font-size: 22px;
-    margin:10px;
+    margin: 10px;
 }
 
 .homepage_gamebox input[type=text] {
@@ -85,4 +85,45 @@
 
 .homepage button:hover {
     cursor: pointer;
+}
+
+ul {
+    display: inline-block;
+    border: 0.1em black solid;
+    margin: 3px 30px 20px;
+    height: 200px;
+    width: 318px;
+    text-align: left;
+    background-color: white;
+    list-style-type: none;
+    padding-inline-start: 0px;
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+li {
+    padding: 8px 9px 2px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.li_full{
+    color: rgb(219, 14, 14);
+    opacity: 0.8;
+}
+
+li:hover {
+    cursor: pointer;
+    background-color: grey;
+}
+
+.waiting {
+    clip-path: inset(0 3ch 0 0);
+    animation: l 2s steps(4) infinite;
+}
+
+@keyframes l {
+    to {
+        clip-path: inset(0 -2ch 0 0)
+    }
 }
