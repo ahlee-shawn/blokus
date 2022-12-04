@@ -16,7 +16,7 @@ function Waiting() {
     const stopWaiting = async () => {
         const gameDoc = doc(db, "games", id);
         await updateDoc(gameDoc, {
-            players: arrayRemove(user.uid)
+            players: arrayRemove({uid: user.uid, displayName: user.displayName})
         });
         navigate(appRoutes.home);
     };

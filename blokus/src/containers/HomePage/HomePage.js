@@ -39,7 +39,7 @@ function HomePage() {
     const createGame = async () => {
         var gid = Math.floor(100000 + Math.random() * 900000).toString();
         await setDoc(doc(db, "games", gid), {
-            players: [user.uid]
+            players: [{uid: user.uid, displayName: user.displayName}]
         });
         navigate("/waiting/" + gid);
     };

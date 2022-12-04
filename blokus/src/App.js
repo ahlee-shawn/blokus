@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React, { Component, useEffect } from "react";
+import { useParams } from 'react-router';
+import { Navigate } from 'react-router-dom';
 
 import controlContext from "./contexts/control-context";
 import GameSpace from "./containers/GameSpace/GameSpace";
@@ -7,9 +9,19 @@ import ChessPanel from "./containers/ChessPanel/ChessPanel";
 import board from "./shared/board";
 import chess from "./shared/chess";
 
+import { updateGame, getGameInfo, db, deleteGame } from "./firebase";
+import { onSnapshot, doc } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+import appRoutes from './shared/appRoutes';
+
 import _ from "lodash";
 
 import "./App.css";
+
+function withParams(Component) {
+  return props => <Component {...props} params={useParams()} />;
+}
 
 class App extends Component {
   state = {
@@ -33,6 +45,11 @@ class App extends Component {
     mouseLocation: {},
     playerScore: [0, 0, 0, 0],
     invalidPlacementMsg: "",
+    sessionId: "",
+    uid: undefined,
+    currPlayerName: "",
+    playersUid: [],
+    redirect: false,
   }
 
   constructor() {
@@ -41,9 +58,77 @@ class App extends Component {
     this.mouseMoveOnBoard = this.mouseMoveOnBoard.bind(this);
   }
 
-  componentDidMount = () => {
+  componentDidMount = async () => {
     document.addEventListener("keydown", this.rotateOrFlipChess, false);
     document.addEventListener("mousemove", this.mouseMoveOnBoard, false);
+
+    // get session ID
+    const sessionId = this.props.params.id;
+    this.setState({ sessionId: sessionId })
+
+    // get game status
+    const gameInfo = await getGameInfo(sessionId);
+    console.log(gameInfo);
+
+    // redirect to home if session ID does not exist or has less than four players
+    if (gameInfo === undefined || gameInfo.players.length < 4) {
+      this.setState({ redirect: true });
+    } else {
+      // store players uid
+      this.setState({ playersUid: gameInfo.players });
+  
+      if (gameInfo.currPlayer === undefined) { // new game
+        // update game info with initial set up
+        updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
+        this.setState({ currPlayerName: gameInfo.players[0].displayName })
+      } else { // existing game
+        // load game info
+        this.setState({ currPlayer: gameInfo.currPlayer })
+        this.setState({ currPlayerName: gameInfo.players[gameInfo.currPlayer - 1].displayName })
+        this.setState({ gameBoard: JSON.parse(gameInfo.gameBoard) })
+        this.setState({ viewBoard: JSON.parse(gameInfo.gameBoard) })
+        this.setState({ playerChessList: JSON.parse(gameInfo.playerChessList) })
+        this.setState({ playerScore: gameInfo.playerScore })
+      }
+    }
+
+    // get user ID
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in, see docs for a list of available properties
+        // https://firebase.google.com/docs/reference/js/firebase.User
+        const uid = user.uid;
+
+        // check if user if in player list
+        if (gameInfo.players.findIndex((player) => player.uid === uid) == -1) { // user not in player list 
+          this.setState({ redirect: true });
+        } else {
+          this.setState({ uid: uid });
+        }
+      } else {
+        // User is signed out -> redirect to login
+        this.setState({ redirect: true });
+      }
+    });
+
+    // listen to DB update
+    const unsubscribeDb = onSnapshot(doc(db, "games", sessionId), (doc) => {
+      if (doc.data() === undefined) { // redirect to home page if game deleted
+        this.setState({ redirect: true });
+      } else {
+        this.setState({ currPlayer: doc.data().currPlayer })
+        this.setState({ currPlayerName: doc.data().players[doc.data().currPlayer - 1].displayName })
+        this.setState({ gameBoard: JSON.parse(doc.data().gameBoard) })
+        this.setState({ viewBoard: JSON.parse(doc.data().gameBoard) })
+        this.setState({ playerChessList: JSON.parse(doc.data().playerChessList) })
+        this.setState({ playerScore: doc.data().playerScore })
+      }
+    });
+  }
+
+  getPlayerId = () => {
+    return (this.state.playersUid.findIndex((player) => player.uid === this.state.uid) + 1).toString();
   }
 
   mouseMoveOnBoard = (event) => {
@@ -249,7 +334,7 @@ class App extends Component {
             if (player === "3" && mouseRow - offset + i === 0 && mouseCol - offset + j === 19) {
               coversCorner = true;
             }
-            
+
             // player 4: bottom right
             if (player === "4" && mouseRow - offset + i === 19 && mouseCol - offset + j === 19) {
               coversCorner = true;
@@ -298,6 +383,9 @@ class App extends Component {
     var playerScore = { ...this.state.playerScore };
     playerScore[parseInt(player) - 1] += numOfSquares;
     this.setState({ playerScore: playerScore });
+
+    // update DB
+    updateGame(this.state.sessionId, { gameBoard: JSON.stringify(gameBoardClone), playerScore: playerScore });
   }
 
   placeChess = (event) => {
@@ -314,9 +402,25 @@ class App extends Component {
         this.setState({ invalidPlacementMsg: "" });
 
         // rotate player
-        this.setState({ currPlayer: ((this.state.currPlayer) % 4 + 1).toString()});
+        const nextPlayer = ((this.state.currPlayer) % 4 + 1).toString();
+        this.setState({ currPlayer: nextPlayer });
+
+        // update DB
+        updateGame(this.state.sessionId, { playerChessList: JSON.stringify(playerChessListClone), currPlayer: nextPlayer });
       }
     }
+  }
+
+  skipTurn = () => {
+    const nextPlayer = ((this.state.currPlayer) % 4 + 1).toString();
+    this.setState({ currPlayer: nextPlayer });
+
+    // update DB
+    updateGame(this.state.sessionId, { currPlayer: nextPlayer });
+  }
+
+  endGame = () => {
+    deleteGame(this.state.sessionId);
   }
 
   render() {
@@ -330,7 +434,15 @@ class App extends Component {
       viewBoard,
       playerScore,
       invalidPlacementMsg,
+      currPlayerName,
+      redirect,
     } = this.state;
+
+    if (redirect === true) {
+      return ( //
+        <Navigate to={appRoutes.login} />
+      );
+    }
 
     return (
       <React.Fragment>
@@ -349,6 +461,10 @@ class App extends Component {
             viewBoard,
             playerScore,
             invalidPlacementMsg,
+            currPlayerName,
+            getPlayerId: this.getPlayerId,
+            skipTurn: this.skipTurn,
+            endGame: this.endGame,
           }}
         >
           <div className="gui_container">
@@ -364,4 +480,4 @@ class App extends Component {
 
 }
 
-export default App;
+export default withParams(App);

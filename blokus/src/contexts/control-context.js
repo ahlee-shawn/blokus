@@ -14,6 +14,10 @@ const controlContext = createContext({
     viewBoard: [],
     playerScore: [],
     invalidPlacementMsg: "",
+    currPlayerName: "",
+    getPlayerId: () => {},
+    skipTurn: () => {},
+    endGame: () => {},
 });
 
 export default controlContext;
