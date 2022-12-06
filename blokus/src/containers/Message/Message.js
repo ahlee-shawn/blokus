@@ -13,7 +13,9 @@ const Message = () => {
         <div className="message">
             <p id="curPlayerMsg">Current player: {currPlayerName}</p>
             {invalidPlacementMsg !== "" &&
-                <p id="invalidPlacementMsg">{invalidPlacementMsg}</p>
+                <div id="invalidPlacementMsgBlock">
+                    <p id="invalidPlacementMsg">{invalidPlacementMsg}</p>
+                </div>
             }
         </div>
     );
