@@ -1,3 +1,11 @@
+#curPlayerMsg {
+    text-align: center;
+}
+
+#invalidPlacementMsgBlock {
+    min-height: 150px;
+}
+
 #invalidPlacementMsg {
     padding: 20px;
     background-color: #f44336;

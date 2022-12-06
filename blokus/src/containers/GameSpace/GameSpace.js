@@ -12,8 +12,8 @@ const GameSpace = () => {
         <div className="game_space_container">
             <h1>Blokus</h1>
             <Board />
-            <Message />
             <Scoreboard />
+            <Message />
             <ControlPanel />
             <Rules />
         </div>
