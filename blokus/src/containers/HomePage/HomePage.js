@@ -24,7 +24,7 @@ function HomePage() {
         if (docSnap.exists()) {
             if (docSnap.data().players.length < 4) {
                 await updateDoc(doc(db, "games", gid), {
-                    players: arrayUnion(user.uid)
+                    players: arrayUnion({uid: user.uid, displayName: user.displayName})
                 });
                 navigate("/waiting/" + gid);
             }
