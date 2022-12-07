@@ -204,10 +204,12 @@ class App extends Component {
   }
 
   selectChess = (event) => {
-    const divId = event.nativeEvent.path[2].id;
-    this.setState({ selectedChessId: divId });
-    let player = divId.split("_")[4];
-    this.setState({ selectedChessPattern: this.state.playerChessPatternList[parseInt(player.substr(player.length - 1)) - 1][parseInt(divId.split("_")[3])] });
+    if (this.state.currPlayer === this.getPlayerId()) {
+      const divId = event.nativeEvent.path[2].id;
+      this.setState({ selectedChessId: divId });
+      let player = divId.split("_")[4];
+      this.setState({ selectedChessPattern: this.state.playerChessPatternList[parseInt(player.substr(player.length - 1)) - 1][parseInt(divId.split("_")[3])] });
+    }
   }
 
   canPreviewChess = (mouseRow, mouseCol) => {
