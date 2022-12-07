@@ -289,7 +289,7 @@ class App extends Component {
         if (pattern[i][j] === "1") {
           // check if the space is already taken
           if (gameBoard[mouseRow - offset + i][mouseCol - offset + j] !== '0') {
-            this.setState({ invalidPlacementMsg: "Cannot overlap with other blocks" });
+            this.setState({ invalidPlacementMsg: "Cannot overlap with other pieces" });
             return false;
           }
 
@@ -315,7 +315,7 @@ class App extends Component {
           }
 
           if (touchesSelfBlock) {
-            this.setState({ invalidPlacementMsg: "Cannot touch same color blocks with edge" });
+            this.setState({ invalidPlacementMsg: "Cannot touch same color pieces with edge" });
             return false;
           }
 
@@ -358,7 +358,7 @@ class App extends Component {
     }
 
     if (!coversCorner && !touchesCorner) {
-      this.setState({ invalidPlacementMsg: "Must start at the corner and consecutive blocks must touch existing same color block with only corner-to-corner contact allowed" });
+      this.setState({ invalidPlacementMsg: "Must start at the corner and consecutive pieces must touch existing same color pieces with only corner-to-corner contact allowed" });
     }
 
     return (coversCorner || touchesCorner);
