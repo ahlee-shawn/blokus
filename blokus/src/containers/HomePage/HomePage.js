@@ -92,7 +92,7 @@ function HomePage() {
                         <button type="submit">Join</button>
                     </form>
                     <p>{error}</p>
-                    <h3>Game Room &#129047;&#129047;&#129047;</h3>
+                    <h3>Game Room</h3>
                     <ul>
                         {Object.keys(gamedata).map((gid, idx) => {
                             var pnum = gamedata[gid].players.length;
