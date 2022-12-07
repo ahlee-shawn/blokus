@@ -4,6 +4,7 @@
 }
 
 .disabled_chess_piece {
+    margin: 0.1rem;
     opacity: 0.3;
 }
 

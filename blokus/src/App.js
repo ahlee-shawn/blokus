@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from "react";
+import React, { Component } from "react";
 import { useParams } from 'react-router';
 import { Navigate } from 'react-router-dom';
 
@@ -76,7 +76,7 @@ class App extends Component {
     } else {
       // store players uid
       this.setState({ playersUid: gameInfo.players });
-  
+
       if (gameInfo.currPlayer === undefined) { // new game
         // update game info with initial set up
         updateGame(sessionId, { currPlayer: this.state.currPlayer, gameBoard: JSON.stringify(this.state.gameBoard), playerChessList: JSON.stringify(this.state.playerChessList), playerScore: this.state.playerScore });
@@ -101,7 +101,7 @@ class App extends Component {
         const uid = user.uid;
 
         // check if user if in player list
-        if (gameInfo.players.findIndex((player) => player.uid === uid) == -1) { // user not in player list 
+        if (gameInfo.players.findIndex((player) => player.uid === uid) === -1) { // user not in player list 
           this.setState({ redirect: true });
         } else {
           this.setState({ uid: uid });
