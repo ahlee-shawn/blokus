@@ -63,7 +63,7 @@ function HomePage() {
             });
             setGamedata(tmpData);
         });
-    }, []);
+    }, [user]);
 
     return (
         <div className="homepage">
