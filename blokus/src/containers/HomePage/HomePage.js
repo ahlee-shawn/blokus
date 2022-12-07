@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db, logout } from "../../firebase";
 import "./HomePage.css";
-import { doc, setDoc, getDoc, getDocs, collection, arrayUnion, updateDoc } from "firebase/firestore";
+import { onSnapshot, doc, setDoc, getDoc, collection, arrayUnion, updateDoc, query } from "firebase/firestore";
 import appRoutes from '../../shared/appRoutes';
 
 function HomePage() {
@@ -24,7 +24,7 @@ function HomePage() {
         if (docSnap.exists()) {
             if (docSnap.data().players.length < 4) {
                 await updateDoc(doc(db, "games", gid), {
-                    players: arrayUnion({uid: user.uid, displayName: user.displayName})
+                    players: arrayUnion({ uid: user.uid, displayName: user.displayName })
                 });
                 navigate("/waiting/" + gid);
             }
@@ -39,19 +39,10 @@ function HomePage() {
     const createGame = async () => {
         var gid = Math.floor(100000 + Math.random() * 900000).toString();
         await setDoc(doc(db, "games", gid), {
-            players: [{uid: user.uid, displayName: user.displayName}]
+            players: [{ uid: user.uid, displayName: user.displayName }]
         });
         navigate("/waiting/" + gid);
     };
-
-    const getGames = async () => {
-        const games = await getDocs(collection(db, "games"));
-        const tmpData = {};
-        games.forEach((doc) => {
-            tmpData[doc.id] = doc.data();
-        });
-        setGamedata(tmpData);
-    }
 
     const inputGameid = (gid) => {
         setError("");
@@ -62,11 +53,17 @@ function HomePage() {
         if (!user) {
             return navigate(appRoutes.login);
         }
-        else {
-            setName(user.displayName);
-            getGames();
-        }
-    }, [user]);
+        setName(user.displayName);
+
+        const q = query(collection(db, "games"));
+        onSnapshot(q, (querySnapshot) => {
+            const tmpData = {};
+            querySnapshot.forEach((doc) => {
+                tmpData[doc.id] = doc.data();
+            });
+            setGamedata(tmpData);
+        });
+    }, []);
 
     return (
         <div className="homepage">
@@ -88,7 +85,8 @@ function HomePage() {
                                 pattern="^[0-9]{6}$"
                                 maxLength="6"
                                 placeholder="6-digit Game ID..."
-                                defaultValue={selectgameid}
+                                value={selectgameid}
+                                onChange={e => setSelectgameid(e.target.value)}
                             />
                         </label>
                         <button type="submit">Join</button>
