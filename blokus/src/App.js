@@ -412,11 +412,19 @@ class App extends Component {
   }
 
   skipTurn = () => {
+    // rotate player
     const nextPlayer = ((this.state.currPlayer) % 4 + 1).toString();
     this.setState({ currPlayer: nextPlayer });
 
     // update DB
     updateGame(this.state.sessionId, { currPlayer: nextPlayer });
+
+    // clear selected piece
+    this.setState({ selectedChessId: "" });
+    this.setState({ selectedChessPattern: [[]] });
+
+    // clear invalid placement message
+    this.setState({ invalidPlacementMsg: "" });
   }
 
   endGame = () => {
