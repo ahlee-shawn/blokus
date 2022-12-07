@@ -13,13 +13,23 @@ import { getFirestore, query, getDocs, collection, where, addDoc, getDoc, doc, u
 
 
 // melody DB
+// const Config = {
+//     apiKey: "AIzaSyD4xiS5ZeVfU7buKBgOoJOxU83UDCtNzdc",
+//     authDomain: "ssui-final-project-caf31.firebaseapp.com",
+//     projectId: "ssui-final-project-caf31",
+//     storageBucket: "ssui-final-project-caf31.appspot.com",
+//     messagingSenderId: "263947149135",
+//     appId: "1:263947149135:web:7247512da5f328108e6f3a"
+// };
+
 const Config = {
-    apiKey: "AIzaSyD4xiS5ZeVfU7buKBgOoJOxU83UDCtNzdc",
-    authDomain: "ssui-final-project-caf31.firebaseapp.com",
-    projectId: "ssui-final-project-caf31",
-    storageBucket: "ssui-final-project-caf31.appspot.com",
-    messagingSenderId: "263947149135",
-    appId: "1:263947149135:web:7247512da5f328108e6f3a"
+    apiKey: "AIzaSyAQuxqdD6DrxQtxFvGdKh-RxXIl5h6XuJA",
+    authDomain: "ssui-final-project-blokus.firebaseapp.com",
+    projectId: "ssui-final-project-blokus",
+    storageBucket: "ssui-final-project-blokus.appspot.com",
+    messagingSenderId: "738896237670",
+    appId: "1:738896237670:web:3d298cdb45ad919ed749a7",
+    measurementId: "G-EJ5VK9N4JD"
 };
 
 const app = initializeApp(Config);
